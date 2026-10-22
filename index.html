@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>카페 메뉴 주문 및 확인</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">☕ 카페 주문</h1>
+      <nav class="main-tabs" role="tablist">
+        <button class="tab active" data-view="customer">주문하기</button>
+        <button class="tab" data-view="admin">관리자</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 고객 주문 화면 -->
+    <section id="view-customer" class="view active">
+      <h2 class="section-title">메뉴를 선택하세요</h2>
+      <div class="layout">
+        <div id="menu-list" class="menu-list"></div>
+
+        <aside class="cart-panel">
+          <h3>🛒 장바구니</h3>
+          <ul id="cart-list" class="cart-list"></ul>
+          <div class="cart-total">
+            합계: <span id="cart-total">0</span>원
+          </div>
+          <button id="order-btn" class="btn primary" type="button">주문하기</button>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 관리자 대시보드 화면 -->
+    <section id="view-admin" class="view">
+      <h2 class="section-title">관리자 대시보드</h2>
+      <div class="admin-tabs" role="tablist">
+        <button class="tab active" data-admin="orders">주문 현황</button>
+        <button class="tab" data-admin="stock">재고 현황</button>
+      </div>
+
+      <!-- 주문 현황 -->
+      <div id="admin-orders" class="admin-panel active">
+        <div id="order-list" class="order-list"></div>
+      </div>
+
+      <!-- 재고 현황 -->
+      <div id="admin-stock" class="admin-panel">
+        <button id="stock-reset" class="btn outline" type="button">전체 재고 초기화</button>
+        <table class="stock-table">
+          <thead>
+            <tr>
+              <th>메뉴</th>
+              <th>가격</th>
+              <th>남은 재고</th>
+              <th>상태</th>
+              <th>재고 보충</th>
+            </tr>
+          </thead>
+          <tbody id="stock-list"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>국제통상학과 · 201702144 · 홍현준</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
