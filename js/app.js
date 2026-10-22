@@ -256,8 +256,113 @@ document.getElementById("cart-list").addEventListener("click", (e) => {
   renderCart();
 });
 
+// ===== 화면 전환: 고객 / 관리자 =====
+const viewTabs = document.querySelectorAll(".main-tabs .tab");
+viewTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    viewTabs.forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+    document.getElementById("view-" + tab.dataset.view).classList.add("active");
+  });
+});
+
+// ===== 관리자 탭 전환: 주문 현황 / 재고 현황 =====
+const adminTabs = document.querySelectorAll(".admin-tabs .tab");
+adminTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    adminTabs.forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelectorAll(".admin-panel").forEach((p) => p.classList.remove("active"));
+    document.getElementById("admin-" + tab.dataset.admin).classList.add("active");
+  });
+});
+
+// ===== 관리자: 주문 현황 렌더링 =====
+function renderOrders() {
+  const list = document.getElementById("order-list");
+  if (orders.length === 0) {
+    list.innerHTML = '<p class="empty-msg">접수된 주문이 없습니다.</p>';
+    return;
+  }
+
+  list.innerHTML = "";
+  orders.forEach((order, idx) => {
+    const itemsText = order.items
+      .map((it) => `${it.name}${optionLabel(it.shot, it.syrup)} × ${it.qty}`)
+      .join(", ");
+    const done = order.status === "done";
+
+    const card = document.createElement("div");
+    card.className = "order-card";
+    card.innerHTML = `
+      <div class="order-head">
+        <span class="order-id">${order.id}</span>
+        <span class="order-time">${order.time}</span>
+        <span class="status ${done ? "done" : "received"}">${done ? "제조완료" : "접수"}</span>
+      </div>
+      <div class="order-items">${itemsText}</div>
+      <div class="order-total">합계: ${formatPrice(order.total)}원</div>
+      ${
+        done
+          ? ""
+          : `<button type="button" class="btn outline small" data-action="done" data-idx="${idx}">제조 완료 처리</button>`
+      }
+    `;
+    list.appendChild(card);
+  });
+}
+
+document.getElementById("order-list").addEventListener("click", (e) => {
+  if (e.target.dataset.action === "done") {
+    orders[Number(e.target.dataset.idx)].status = "done";
+    persist();
+    renderOrders();
+  }
+});
+
+// ===== 관리자: 재고 현황 렌더링 =====
+function renderStock() {
+  const tbody = document.getElementById("stock-list");
+  tbody.innerHTML = "";
+
+  menu.forEach((item) => {
+    const soldOut = item.stock <= 0;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.name}</td>
+      <td>${formatPrice(item.price)}원</td>
+      <td>${item.stock}개</td>
+      <td class="${soldOut ? "soldout-text" : "instock-text"}">${soldOut ? "품절" : "판매중"}</td>
+      <td><button type="button" class="btn small outline" data-action="restock" data-id="${item.id}">+1 보충</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById("stock-list").addEventListener("click", (e) => {
+  if (e.target.dataset.action === "restock") {
+    const m = getMenu(e.target.dataset.id);
+    m.stock += 1;
+    persist();
+    renderStock();
+    renderMenu();
+  }
+});
+
+document.getElementById("stock-reset").addEventListener("click", () => {
+  if (confirm("모든 메뉴의 재고를 10개로 초기화할까요?")) {
+    menu.forEach((m) => (m.stock = 10));
+    persist();
+    renderStock();
+    renderMenu();
+  }
+});
+
 document.getElementById("order-btn").addEventListener("click", placeOrder);
 
 // ===== 초기 렌더링 =====
 renderMenu();
 renderCart();
+renderOrders();
+renderStock();
