@@ -151,6 +151,14 @@ function addToCart(menuId) {
   const existing = cart.find(
     (c) => c.menuId === menuId && c.shot === shot && c.syrup === syrup
   );
+
+  // 재고 초과 담기 차단
+  const currentQty = existing ? existing.qty : 0;
+  if (currentQty + 1 > item.stock) {
+    alert(`"${item.name}"의 재고가 부족합니다. (남은 재고: ${item.stock}개)`);
+    return;
+  }
+
   if (existing) {
     existing.qty += 1;
   } else {
