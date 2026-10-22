@@ -29,7 +29,7 @@ function save(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-let menu = load(KEY_MENU, MENU_DEFAULT);
+let menu = load(KEY_MENU, null) || MENU_DEFAULT.map((m) => ({ ...m }));
 let cart = load(KEY_CART, []);
 let orders = load(KEY_ORDERS, []);
 
@@ -264,6 +264,12 @@ viewTabs.forEach((tab) => {
     tab.classList.add("active");
     document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
     document.getElementById("view-" + tab.dataset.view).classList.add("active");
+
+    // 관리자 화면 진입 시 최신 주문/재고 반영
+    if (tab.dataset.view === "admin") {
+      renderOrders();
+      renderStock();
+    }
   });
 });
 
